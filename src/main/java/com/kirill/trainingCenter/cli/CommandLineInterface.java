@@ -1,21 +1,28 @@
 package com.kirill.trainingCenter.cli;
 
-
-
-import com.kirill.trainingCenter.db.CourseBase;
-import com.kirill.trainingCenter.db.CurriculumBase;
-import com.kirill.trainingCenter.db.StudentBase;
 import com.kirill.trainingCenter.domain.Course;
 import com.kirill.trainingCenter.domain.Curriculum;
 import com.kirill.trainingCenter.domain.Student;
+import com.kirill.trainingCenter.repo.CourseRepo;
+import com.kirill.trainingCenter.repo.CurriculumRepo;
+import com.kirill.trainingCenter.repo.StudentRepo;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Scanner;
 
-public class CommandLine {
-    private static final StudentBase sb = new StudentBase();
-    private static final CourseBase courseBase = new CourseBase();
-    private static final CurriculumBase curriculumBase = new CurriculumBase();
+public class CommandLineInterface {
+    private final StudentRepo studentRepo;
+    private final CourseRepo courseRepo;
+    private final CurriculumRepo curriculumRepo;
+
+    public CommandLineInterface(StudentRepo studentRepo, CourseRepo courseRepo, CurriculumRepo curriculumRepo) {
+        this.studentRepo = studentRepo;
+        this.courseRepo = courseRepo;
+        this.curriculumRepo = curriculumRepo;
+    }
 
     private static final String ADD_STUDENT = "S";
     private static final String[] ADD_STUDENT_ARGS = {"NAME", "LASTNAME"};
@@ -44,28 +51,28 @@ public class CommandLine {
 
     private static final String UNKNOWN_COMMAND = "UNKNOWN COMMAND";
     private static final String WRONG_ARGUMENT = "Wrong argument(s)";
-    
-    public static void start() {
+
+    public void start() {
         System.out.println(getHint());
         String command;
         Scanner sc = new Scanner(System.in);
-        for (;;) {
+        for (; ; ) {
             System.out.print(">>> ");
             LinkedList<String> args = new LinkedList<>(Arrays.asList(sc.nextLine().split(" ")));
             command = args.get(0).toUpperCase(Locale.ROOT);
             args.remove(0);
-            
+
             try {
                 switch (command) {
                     case ADD_STUDENT:
                         if (args.size() != ADD_STUDENT_ARGS.length) {
                             System.out.println(WRONG_ARGUMENT);
                         } else {
-                            sb.add(args.get(0), args.get(1));
+                            studentRepo.add(args.get(0), args.get(1));
                         }
                         break;
                     case GET_STUDENTS:
-                        for (Student student : sb.get()) {
+                        for (Student student : studentRepo.get()) {
                             System.out.println(student);
                         }
                         break;
@@ -73,7 +80,7 @@ public class CommandLine {
                         if (args.size() != GET_STUDENT_ARGS.length) {
                             System.out.println(WRONG_ARGUMENT);
                         } else {
-                            Student student = sb.get(Long.parseLong(args.get(0)));
+                            Student student = studentRepo.get(Long.parseLong(args.get(0)));
                             System.out.println(getStudentInfo(student));
                         }
                         break;
@@ -81,11 +88,11 @@ public class CommandLine {
                         if (args.size() != ADD_CURRICULUM_ARGS.length - 1) {
                             System.out.println(WRONG_ARGUMENT);
                         } else {
-                            curriculumBase.add(args.get(0), LocalDateTime.now());
+                            curriculumRepo.add(args.get(0), LocalDateTime.now());
                         }
                         break;
                     case GET_CURRICULUMS:
-                        for (Curriculum curriculum : curriculumBase.get()) {
+                        for (Curriculum curriculum : curriculumRepo.get()) {
                             System.out.println(curriculum);
                         }
                         break;
@@ -93,11 +100,11 @@ public class CommandLine {
                         if (args.size() != ADD_COURSE_ARGS.length) {
                             System.out.println(WRONG_ARGUMENT);
                         } else {
-                            courseBase.add(args.get(0), Integer.parseInt(args.get(1)));
+                            courseRepo.add(args.get(0), Integer.parseInt(args.get(1)));
                         }
                         break;
                     case GET_COURSES:
-                        for (Course course : courseBase.get()) {
+                        for (Course course : courseRepo.get()) {
                             System.out.println(course);
                         }
                         break;
@@ -108,8 +115,8 @@ public class CommandLine {
                             Long curriculumId = Long.parseLong(args.get(0));
                             Long courseId = Long.parseLong(args.get(1));
 
-                            Curriculum curriculum = curriculumBase.get(curriculumId);
-                            Course course = courseBase.get(courseId);
+                            Curriculum curriculum = curriculumRepo.get(curriculumId);
+                            Course course = courseRepo.get(courseId);
                             curriculum.addCourse(course);
                         }
                         break;
@@ -120,8 +127,8 @@ public class CommandLine {
                             Long curriculumId = Long.parseLong(args.get(0));
                             Long courseId = Long.parseLong(args.get(0));
 
-                            Curriculum curriculum = curriculumBase.get(curriculumId);
-                            Course course = courseBase.get(courseId);
+                            Curriculum curriculum = curriculumRepo.get(curriculumId);
+                            Course course = courseRepo.get(courseId);
                             curriculum.removeCourse(course);
                         }
                         break;
@@ -132,8 +139,8 @@ public class CommandLine {
                             Long studentId = Long.parseLong(args.get(0));
                             Long curriculumId = Long.parseLong(args.get(1));
 
-                            Curriculum curriculum = curriculumBase.get(curriculumId);
-                            Student student = sb.get(studentId);
+                            Curriculum curriculum = curriculumRepo.get(curriculumId);
+                            Student student = studentRepo.get(studentId);
                             student.setCurriculum(curriculum);
                         }
                         break;
@@ -142,7 +149,7 @@ public class CommandLine {
                             System.out.println(WRONG_ARGUMENT);
                         } else {
                             Long studentId = Long.parseLong(args.get(0));
-                            Student student = sb.get(studentId);
+                            Student student = studentRepo.get(studentId);
                             student.setCurriculum(null);
                         }
                         break;

@@ -2,8 +2,6 @@ package com.kirill.trainingCenter.domain;
 
 import com.kirill.trainingCenter.helper.DateHelper;
 
-import java.time.LocalDateTime;
-
 public class Student extends BaseEntity {
     private String name;
     private String lastname;
