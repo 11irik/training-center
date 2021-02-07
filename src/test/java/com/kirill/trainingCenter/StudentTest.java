@@ -12,102 +12,105 @@ public class StudentTest {
 
     Course courseLessWorkingHours = new Course("Git", 4);
     Course courseMoreWorkingHours = new Course("Spring", 10);
+    Course courseLongDuration = new Course("Data Science", 120);
 
-    Curriculum curriculumLaterStart = new Curriculum("Java", LocalDateTime.of(2021, 2, 7, 15, 0));
-    Curriculum curriculumEarlierStart = new Curriculum("Python", LocalDateTime.of(2021, 2, 7, 8, 0));
-    Curriculum curriculumAfterEnd = new Curriculum("Scala", LocalDateTime.of(2021, 2, 7, 20, 0));
-    Curriculum curriculumMonthEdge = new Curriculum("GoLang", LocalDateTime.of(2021, 1, 31, 15, 0));
+    Curriculum curriculumBeforeDay = new Curriculum("Python", LocalDateTime.of(2021, 2, 1, 8, 0));
+    Curriculum curriculumMidDayStart = new Curriculum("Java", LocalDateTime.of(2021, 2, 1, 15, 0));
+    Curriculum curriculumAfterDay = new Curriculum("Scala", LocalDateTime.of(2021, 2, 1, 20, 0));
+    
+    Curriculum curriculumMonthEdge = new Curriculum("GoLang", LocalDateTime.of(2020, 11, 30, 15, 0));
     Curriculum curriculumYearEdge = new Curriculum("C++", LocalDateTime.of(2020, 12, 31, 15, 0));
-    
+    Curriculum curriculumWeekend = new Curriculum("C++", LocalDateTime.of(2021, 2, 5, 15, 0));
+
     Student student = new Student("Kirill", "Lukashin");
-    
+
     @Test
-    public void courseIsLaterWorkingHours() {
-        curriculumLaterStart.addCourse(courseLessWorkingHours);
-        student.setCurriculum(curriculumLaterStart);
-        LocalDateTime endDate = curriculumLaterStart.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
+    public void courseStartIsBeforeWorkingHours() {
+        curriculumBeforeDay.addCourse(courseLessWorkingHours);
+        student.setCurriculum(curriculumBeforeDay);
+        LocalDateTime endDate = curriculumBeforeDay.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
 
         int month = endDate.getMonthValue();
         int day = endDate.getDayOfMonth();
         int hours = endDate.getHour();
-        
+
         Assert.assertEquals(month, 2);
-        Assert.assertEquals(day, 8);
+        Assert.assertEquals(day, 1);
+        Assert.assertEquals(hours, 14);
+    }
+
+    @Test
+    public void courseStartIsBetweenWorkingHours() {
+        curriculumMidDayStart.addCourse(courseLessWorkingHours);
+        student.setCurriculum(curriculumMidDayStart);
+        LocalDateTime endDate = curriculumMidDayStart.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
+
+        int month = endDate.getMonthValue();
+        int day = endDate.getDayOfMonth();
+        int hours = endDate.getHour();
+
+        Assert.assertEquals(month, 2);
+        Assert.assertEquals(day, 2);
         Assert.assertEquals(hours, 11);
     }
 
     @Test
-    public void courseIsEarlierWorkingHours() {
-        curriculumEarlierStart.addCourse(courseLessWorkingHours);
-        student.setCurriculum(curriculumEarlierStart);
-        LocalDateTime endDate = curriculumEarlierStart.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
+    public void courseStartIsAfterWorkingHours() {
+        curriculumAfterDay.addCourse(courseLessWorkingHours);
+        student.setCurriculum(curriculumAfterDay);
+        LocalDateTime endDate = curriculumAfterDay.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
 
         int month = endDate.getMonthValue();
         int day = endDate.getDayOfMonth();
         int hours = endDate.getHour();
 
         Assert.assertEquals(month, 2);
-        Assert.assertEquals(day, 7);
+        Assert.assertEquals(day, 2);
         Assert.assertEquals(hours, 14);
     }
 
     @Test
-    public void courseIsAfterWorkingHours() {
-        curriculumAfterEnd.addCourse(courseLessWorkingHours);
-        student.setCurriculum(curriculumAfterEnd);
-        LocalDateTime endDate = curriculumAfterEnd.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
+    public void courseStartIsBeforeWorkingHoursLongerDuration() {
+        curriculumBeforeDay.addCourse(courseMoreWorkingHours);
+        student.setCurriculum(curriculumBeforeDay);
+        LocalDateTime endDate = curriculumBeforeDay.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
 
         int month = endDate.getMonthValue();
         int day = endDate.getDayOfMonth();
         int hours = endDate.getHour();
 
         Assert.assertEquals(month, 2);
-        Assert.assertEquals(day, 8);
-        Assert.assertEquals(hours, 14);
-    }
-
-    @Test
-    public void courseDurationMoreWorkingHoursEarlierStart() {
-        curriculumEarlierStart.addCourse(courseMoreWorkingHours);
-        student.setCurriculum(curriculumEarlierStart);
-        LocalDateTime endDate = curriculumEarlierStart.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
-
-        int month = endDate.getMonthValue();
-        int day = endDate.getDayOfMonth();
-        int hours = endDate.getHour();
-
-        Assert.assertEquals(month, 2);
-        Assert.assertEquals(day, 8);
+        Assert.assertEquals(day, 2);
         Assert.assertEquals(hours, 12);
     }
 
     @Test
-    public void courseDurationMoreWorkingHoursMidDay() {
-        curriculumLaterStart.addCourse(courseMoreWorkingHours);
-        student.setCurriculum(curriculumLaterStart);
-        LocalDateTime endDate = curriculumLaterStart.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
+    public void courseStartIsBetweenWorkingHoursLongerDuration() {
+        curriculumMidDayStart.addCourse(courseMoreWorkingHours);
+        student.setCurriculum(curriculumMidDayStart);
+        LocalDateTime endDate = curriculumMidDayStart.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
 
         int month = endDate.getMonthValue();
         int day = endDate.getDayOfMonth();
         int hours = endDate.getHour();
 
         Assert.assertEquals(month, 2);
-        Assert.assertEquals(day, 8);
+        Assert.assertEquals(day, 2);
         Assert.assertEquals(hours, 17);
     }
 
     @Test
-    public void courseDurationMoreWorkingHoursAfterWorkingHours() {
-        curriculumAfterEnd.addCourse(courseMoreWorkingHours);
-        student.setCurriculum(curriculumAfterEnd);
-        LocalDateTime endDate = curriculumAfterEnd.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
+    public void courseStartIsAfterWorkingHoursLongerDuration() {
+        curriculumAfterDay.addCourse(courseMoreWorkingHours);
+        student.setCurriculum(curriculumAfterDay);
+        LocalDateTime endDate = curriculumAfterDay.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
 
         int month = endDate.getMonthValue();
         int day = endDate.getDayOfMonth();
         int hours = endDate.getHour();
 
         Assert.assertEquals(month, 2);
-        Assert.assertEquals(day, 9);
+        Assert.assertEquals(day, 3);
         Assert.assertEquals(hours, 12);
     }
 
@@ -121,7 +124,7 @@ public class StudentTest {
         int day = endDate.getDayOfMonth();
         int hours = endDate.getHour();
 
-        Assert.assertEquals(month, 2);
+        Assert.assertEquals(month, 12);
         Assert.assertEquals(day, 1);
         Assert.assertEquals(hours, 17);
     }
@@ -139,6 +142,37 @@ public class StudentTest {
 
         Assert.assertEquals(year, 2021);
         Assert.assertEquals(month, 1);
+        Assert.assertEquals(day, 1);
+        Assert.assertEquals(hours, 17);
+    }
+
+    @Test
+    public void weekendTest() {
+        curriculumWeekend.addCourse(courseMoreWorkingHours);
+        student.setCurriculum(curriculumWeekend);
+        LocalDateTime endDate = curriculumWeekend.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
+
+        int month = endDate.getMonthValue();
+        int day = endDate.getDayOfMonth();
+        int hours = endDate.getHour();
+
+        Assert.assertEquals(month, 2);
+        Assert.assertEquals(day, 8);
+        Assert.assertEquals(hours, 17);
+    }
+
+    @Test
+    public void severalCoursesLongDuration() {
+        curriculumWeekend.addCourse(courseLongDuration);
+        curriculumWeekend.addCourse(courseMoreWorkingHours);
+        student.setCurriculum(curriculumWeekend);
+        LocalDateTime endDate = curriculumWeekend.getEndDate(student.getStartWorkingHours(), student.getEndWorkingHours());
+
+        int month = endDate.getMonthValue();
+        int day = endDate.getDayOfMonth();
+        int hours = endDate.getHour();
+
+        Assert.assertEquals(month, 3);
         Assert.assertEquals(day, 1);
         Assert.assertEquals(hours, 17);
     }
