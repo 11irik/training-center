@@ -37,36 +37,31 @@ public class Curriculum extends BaseEntity{
     }
 
     public LocalDateTime getEndDate(Integer startHours, Integer endHours) {
+        int courseStartHours = startDate.getHour();
         int workingHours = endHours - startHours;
         int duration = getCurriculumDuration();
 
         int firstDayHours;
-        if (startDate.getHour() < endHours) {
-            if (startHours < startDate.getHour()) {
-                firstDayHours = endHours - startDate.getHour();
-            } else {
-                if (duration < workingHours) {
-                    firstDayHours = duration;
-                    return startDate.with(LocalTime.of(startHours + duration, 0));
-                } else {
-                    firstDayHours = workingHours;
-                }
-            }
+        LocalDateTime endDate = startDate;
+        if (courseStartHours > startHours && courseStartHours < endHours) {
+            firstDayHours = endHours - courseStartHours;
         } else {
-            firstDayHours = 0;//todo
+            firstDayHours = workingHours;
+            if (endHours < courseStartHours) {
+                endDate = endDate.plusDays(1);
+            }
         }
-
         duration -= firstDayHours;
-        int workingDays = duration / workingHours;
-        LocalDateTime endDate = startDate.plusDays(workingDays);
-        if (workingDays == 0 && duration != 0) {
+
+        if (duration <= 0) {
+            return endDate.with(LocalTime.of(startHours + getCurriculumDuration(), 0));
+        } else {
+            int workingDays = duration / workingHours;
+            int hoursLeft = duration % workingHours;
+
             endDate = endDate.plusDays(1);
+            return endDate.plusDays(workingDays).with(LocalTime.of(startHours + hoursLeft, 0));
         }
-        
-        int hoursLeft = duration - workingDays * workingHours;
-        endDate = endDate.with(LocalTime.of(startHours + hoursLeft, 0));
-        
-        return endDate;
     }
 
     public int getCurriculumDuration() {
