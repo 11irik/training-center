@@ -1,18 +1,22 @@
 package com.kirill.trainingCenter.domain;
 
+import com.kirill.trainingCenter.helper.DateHelper;
+
+import java.time.LocalDateTime;
+
 public class Student extends BaseEntity {
     private String name;
     private String lastname;
     private Curriculum curriculum;
-    private Integer startWorkingHours;
-    private Integer endWorkingHours;
+    private Integer workingTimeFrom;
+    private Integer workingTimeTo;
 
     public Student(String name, String lastname) {
         super();
         this.name = name;
         this.lastname = lastname;
-        this.startWorkingHours = 10;
-        this.endWorkingHours = 18;
+        this.workingTimeFrom = 10;
+        this.workingTimeTo = 18;
     }
 
     public Long getId() {
@@ -40,18 +44,20 @@ public class Student extends BaseEntity {
     }
 
     public void setCurriculum(Curriculum curriculum) {
+        //curriculum.setStartDate(LocalDateTime.now());todo think about it
+        curriculum.setEndDate(DateHelper.getEndDate(curriculum.getStartDate(), curriculum.getDuration(), workingTimeFrom, workingTimeTo));
         this.curriculum = curriculum;
     }
 
-    public Integer getStartWorkingHours() {
-        return startWorkingHours;
+    public Integer getWorkingTimeFrom() {
+        return workingTimeFrom;
     }
 
-    public Integer getEndWorkingHours() {
-        return endWorkingHours;
+    public Integer getWorkingTimeTo() {
+        return workingTimeTo;
     }
     
     public Integer getWorkingHours() {
-        return endWorkingHours - startWorkingHours;
+        return workingTimeTo - workingTimeFrom;
     }
 }

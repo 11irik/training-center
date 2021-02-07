@@ -186,13 +186,13 @@ public class CommandLine {
         StringBuffer sb = new StringBuffer();
         
         sb.append("STUDENT: ").append(student.getLastname()).append(" ").append(student.getName()).append(('\n'));
-        sb.append("WORKING TIME: FROM ").append(student.getStartWorkingHours()).append(" TO ").append(student.getEndWorkingHours()).append(('\n'));
+        sb.append("WORKING TIME: FROM ").append(student.getWorkingTimeFrom()).append(" TO ").append(student.getWorkingTimeTo()).append(('\n'));
 
 
         if (student.getCurriculum() != null) {
             sb.append("CURRICULUM: ").append(student.getCurriculum().getName()).append('\n');
             sb.append("START_DATE: ").append(formatDate(student.getCurriculum().getStartDate()));
-            sb.append("PROGRAM DURATION: : ").append(student.getCurriculum().getCurriculumDuration());
+            sb.append("PROGRAM DURATION: : ").append(student.getCurriculum().getDuration());
             sb.append("COURSE\t\t\tDURATION (hrs)");
             sb.append("--------------------------");
 
