@@ -231,6 +231,7 @@ public class CommandLineInterface {
         StringBuffer sb = new StringBuffer();
         Curriculum curriculum = student.getCurriculum();
 
+        sb.append(student.getId()).append(" ");
         sb.append(student.getLastname()).append(" ").append(student.getName()).append(" ");
         if (student.getCurriculum() != null) {
             sb.append("(").append(student.getCurriculum().getName()).append(") - ");
