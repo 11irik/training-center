@@ -43,11 +43,8 @@ public class Main {
         curriculumRepo.add("Basic");
         curriculumRepo.add("All in One");
         Curriculum curriculum1 = curriculumRepo.get(1L);
-        curriculum1.setStartDate(weekAgo);
         Curriculum curriculum2 = curriculumRepo.get(2L);
-        curriculum2.setStartDate(monthAgo);
         Curriculum curriculum3 = curriculumRepo.get(3L);
-        curriculum3.setStartDate(yesterday);
 
         curriculum1.addCourse(course2);
         curriculum1.addCourse(course3);
@@ -58,9 +55,9 @@ public class Main {
         curriculum3.addCourse(course2);
         curriculum3.addCourse(course3);
 
-        student1.setCurriculum(curriculum1);
-        student2.setCurriculum(curriculum2);
-        student3.setCurriculum(curriculum3);
+        student1.setCurriculum(curriculum1, monthAgo);
+        student2.setCurriculum(curriculum2, weekAgo);
+        student3.setCurriculum(curriculum3, yesterday);
 
         new CommandLineInterface(studentRepo, courseRepo, curriculumRepo).start();
     }

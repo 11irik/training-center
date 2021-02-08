@@ -2,6 +2,8 @@ package com.kirill.trainingCenter.domain;
 
 import com.kirill.trainingCenter.helper.DateHelper;
 
+import java.time.LocalDateTime;
+
 public class Student extends BaseEntity {
     private String name;
     private String lastname;
@@ -49,7 +51,13 @@ public class Student extends BaseEntity {
     }
 
     public void setCurriculum(Curriculum curriculum) {
-        //curriculum.setStartDate(LocalDateTime.now());todo think about it
+        curriculum.setStartDate(LocalDateTime.now());
+        curriculum.setEndDate(DateHelper.getEndDate(curriculum.getStartDate(), curriculum.getDuration(), workingTimeFrom, workingTimeTo));
+        this.curriculum = curriculum;
+    }
+
+    public void setCurriculum(Curriculum curriculum, LocalDateTime startDate) {
+        curriculum.setStartDate(startDate);
         curriculum.setEndDate(DateHelper.getEndDate(curriculum.getStartDate(), curriculum.getDuration(), workingTimeFrom, workingTimeTo));
         this.curriculum = curriculum;
     }

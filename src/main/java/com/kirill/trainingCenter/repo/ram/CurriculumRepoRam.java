@@ -18,7 +18,7 @@ public class CurriculumRepoRam implements CurriculumRepo {
 
     @Override
     public void add(String name, LocalDateTime localDateTime) {
-        curriculumList.add(new Curriculum(++counter, name, localDateTime));
+        curriculumList.add(new Curriculum(++counter, name));
     }
 
     @Override

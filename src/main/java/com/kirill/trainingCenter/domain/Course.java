@@ -5,7 +5,6 @@ public class Course extends BaseEntity{
     private Integer duration;
 
     public Course(String name, Integer duration) {
-        super();
         this.name = name;
         this.duration = duration;
     }

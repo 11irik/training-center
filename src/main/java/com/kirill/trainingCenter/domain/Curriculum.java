@@ -10,23 +10,14 @@ public class Curriculum extends BaseEntity {
     private LocalDateTime endDate;
     private List<Course> courseList;
 
-    public Curriculum(String name, LocalDateTime startDate) {
+    public Curriculum(String name) {
         this.name = name;
-        this.startDate = startDate;
-        courseList = new ArrayList<>();
-    }
-
-    public Curriculum(Long id, String name, LocalDateTime startDate) {
-        this.id = id;
-        this.name = name;
-        this.startDate = startDate;
         courseList = new ArrayList<>();
     }
 
     public Curriculum(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.startDate = LocalDateTime.now();
         courseList = new ArrayList<>();
     }
 
