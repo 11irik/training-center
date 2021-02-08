@@ -9,17 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CurriculumRepoRam implements CurriculumRepo {
+    private Long counter = 0L;
     private final List<Curriculum> curriculumList;
 
     public CurriculumRepoRam() {
         curriculumList = new ArrayList<>();
-
-        curriculumList.add(new Curriculum("Java", LocalDateTime.now()));
     }
 
     @Override
     public void add(String name, LocalDateTime localDateTime) {
-        curriculumList.add(new Curriculum(name, localDateTime));
+        curriculumList.add(new Curriculum(++counter, name, localDateTime));
+    }
+
+    @Override
+    public void add(String name) {
+        curriculumList.add(new Curriculum(++counter, name));
     }
 
     @Override

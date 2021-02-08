@@ -1,15 +1,13 @@
 package com.kirill.trainingCenter.domain;
 
-public class BaseEntity {
-    protected static Long counter = 0L;
-
-    protected final Long id;
-
-    public BaseEntity() {
-        id = ++counter;
-    }
+abstract class BaseEntity {
+    protected Long id;
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

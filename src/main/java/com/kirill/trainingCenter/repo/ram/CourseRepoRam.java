@@ -7,17 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CourseRepoRam implements CourseRepo {
+    private Long counter = 0L;
     private final List<Course> courseList;
 
     public CourseRepoRam() {
         courseList = new ArrayList<>();
-        
-        courseList.add(new Course("Hib", 12));
     }
 
     @Override
     public void add(String name, Integer duration) {
-        courseList.add(new Course(name, duration));
+        courseList.add(new Course(++counter, name, duration));
     }
 
     @Override

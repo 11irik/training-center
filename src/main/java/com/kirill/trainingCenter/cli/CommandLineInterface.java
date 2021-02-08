@@ -7,7 +7,10 @@ import com.kirill.trainingCenter.repo.CourseRepo;
 import com.kirill.trainingCenter.repo.CurriculumRepo;
 import com.kirill.trainingCenter.repo.StudentRepo;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -24,26 +27,26 @@ public class CommandLineInterface {
         this.curriculumRepo = curriculumRepo;
     }
 
-    private static final String ADD_STUDENT = "S";
+    private static final String ADD_STUDENT = "STUD";
     private static final String[] ADD_STUDENT_ARGS = {"NAME", "LASTNAME"};
-    private static final String GET_STUDENTS = "SS";
-    private static final String GET_STUDENT = "SSS";
+    private static final String GET_STUDENTS = "STUDENTS";
+    private static final String GET_STUDENT = "STUDENT";
     private static final String[] GET_STUDENT_ARGS = {"ID"};
 
-    private static final String ADD_CURRICULUM = "C";
+    private static final String ADD_CURRICULUM = "CUR";
     private static final String[] ADD_CURRICULUM_ARGS = {"NAME", "START DATE (Optional)"};
-    private static final String GET_CURRICULUMS = "CS";
+    private static final String GET_CURRICULUMS = "CURS";
 
-    private static final String ADD_COURSE = "CC";
+    private static final String ADD_COURSE = "COUR";
     private static final String[] ADD_COURSE_ARGS = {"NAME", "DURATION"};
-    private static final String GET_COURSES = "CCS";
+    private static final String GET_COURSES = "COURSES";
 
-    private static final String ADD_COURSE_TO_CURRICULUM = "MC";
-    private static final String REMOVE_COURSE_FROM_CURRICULUM = "UC";
+    private static final String ADD_COURSE_TO_CURRICULUM = "COURMAP";
+    private static final String REMOVE_COURSE_FROM_CURRICULUM = "COURREMOVE";
     private static final String[] MAP_COURSE_TO_CURRICULUM_ARGS = {"CURRICULUM ID", "COURSE ID"};
 
-    private static final String ADD_CURRICULUM_TO_STUDENT = "MS";
-    private static final String REMOVE_CURRICULUM_FROM_STUDENT = "US";
+    private static final String ADD_CURRICULUM_TO_STUDENT = "CURMAP";
+    private static final String REMOVE_CURRICULUM_FROM_STUDENT = "CURREMOVE";
     private static final String[] MAP_CURRICULUM_TO_STUDENT_ARGS = {"STUDENT ID", "CURRICULUM ID"};
 
     private static final String GET_HINT = "HINT";
@@ -72,8 +75,10 @@ public class CommandLineInterface {
                         }
                         break;
                     case GET_STUDENTS:
+                        LocalDateTime reportDate = LocalDateTime.now();
+                        System.out.println("Generating report date - " + formatDate(reportDate));
                         for (Student student : studentRepo.get()) {
-                            System.out.println(student);
+                            System.out.println(getShortStudentInfo(student, reportDate));
                         }
                         break;
                     case GET_STUDENT:
@@ -85,7 +90,7 @@ public class CommandLineInterface {
                         }
                         break;
                     case ADD_CURRICULUM:
-                        if (args.size() != ADD_CURRICULUM_ARGS.length - 1) {
+                        if (args.size() != ADD_CURRICULUM_ARGS.length - 1) { //FIXME
                             System.out.println(WRONG_ARGUMENT);
                         } else {
                             curriculumRepo.add(args.get(0), LocalDateTime.now());
@@ -191,21 +196,29 @@ public class CommandLineInterface {
     
     private static String getStudentInfo(Student student) {
         StringBuffer sb = new StringBuffer();
+        LocalDateTime reportDate = LocalDateTime.now();
+        Curriculum curriculum = student.getCurriculum();
         
         sb.append("STUDENT: ").append(student.getLastname()).append(" ").append(student.getName()).append(('\n'));
         sb.append("WORKING TIME: FROM ").append(student.getWorkingTimeFrom()).append(" TO ").append(student.getWorkingTimeTo()).append(('\n'));
 
-
         if (student.getCurriculum() != null) {
             sb.append("CURRICULUM: ").append(student.getCurriculum().getName()).append('\n');
-            sb.append("START_DATE: ").append(formatDate(student.getCurriculum().getStartDate()));
-            sb.append("PROGRAM DURATION: : ").append(student.getCurriculum().getDuration());
-            sb.append("COURSE\t\t\tDURATION (hrs)");
-            sb.append("--------------------------");
+            sb.append("START_DATE: ").append(formatDate(student.getCurriculum().getStartDate())).append('\n');
+            sb.append("END_DATE: ").append(formatDate(student.getCurriculum().getEndDate())).append('\n');
+            sb.append("PROGRAM DURATION: ").append(student.getCurriculum().getDuration()).append('\n');
+            Duration duration = Duration.between(reportDate, curriculum.getEndDate());
+            if (reportDate.compareTo(curriculum.getEndDate()) > 0) {
+                sb.append(durationToString(duration)).append(" have passed since the end.").append('\n');
+            } else {
+                sb.append(durationToString(duration)).append(" are left until the end.").append('\n');
+            }
+            sb.append("COURSE\t\t\tDURATION (hrs)").append('\n');
+            sb.append("--------------------------").append('\n');
 
             int count = 0;
             for (Course course : student.getCurriculum().getCourseList()) {
-                sb.append(++count).append(". ").append(course.getName()).append(".\t").append(course.getDuration());
+                sb.append(++count).append(". ").append(course.getName()).append(".\t").append(course.getDuration()).append('\n');
             }
         } else {
             sb.append("NO CURRICULUM").append('\n');
@@ -214,13 +227,39 @@ public class CommandLineInterface {
         return sb.toString();
     }
     
-    private static String formatDate(LocalDateTime localDateTime) {
+    private static String getShortStudentInfo(Student student, LocalDateTime reportDate) {
         StringBuffer sb = new StringBuffer();
-        sb.append(localDateTime.getDayOfMonth()).append(" ")
-                .append(localDateTime.getMonth()).append(" ")
-                .append(localDateTime.getYear()).append(" - ")
-                .append(localDateTime.getDayOfWeek());
+        Curriculum curriculum = student.getCurriculum();
+
+        sb.append(student.getLastname()).append(" ").append(student.getName()).append(" ");
+        if (student.getCurriculum() != null) {
+            sb.append("(").append(student.getCurriculum().getName()).append(") - ");
+            Duration duration = Duration.between(reportDate, curriculum.getEndDate());
+            if (reportDate.compareTo(curriculum.getEndDate()) > 0) {
+                sb.append("Training completed. ")
+                        .append(durationToString(duration)).append(" have passed since the end.");
+            } else {
+                sb.append("Training is not finished. ")
+                        .append(durationToString(duration)).append(" are left until the end.");
+            }
+        } else {
+            sb.append("NO CURRICULUM");
+        }
         
         return sb.toString();
+    }
+    
+    private static String formatDate(LocalDateTime localDateTime) {
+        StringBuffer sb = new StringBuffer();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, E, HH:mm");
+        sb.append(localDateTime.format(formatter));
+        
+        return sb.toString();
+    }
+    
+    private static String durationToString(Duration duration) {
+        Long days = Math.abs(duration.toDays());
+        Long hours = Math.abs(duration.toHours()) - days * 24; //todo to const
+        return days + " d " + hours + " hours";
     }
 }

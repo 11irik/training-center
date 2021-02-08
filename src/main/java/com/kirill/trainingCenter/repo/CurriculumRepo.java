@@ -8,6 +8,8 @@ import java.util.List;
 public interface CurriculumRepo {
     void add(String name, LocalDateTime localDateTime);
 
+    void add(String name);
+
     List<Curriculum> get();
 
     Curriculum get(Long id);

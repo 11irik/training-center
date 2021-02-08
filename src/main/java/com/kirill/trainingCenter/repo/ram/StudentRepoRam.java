@@ -7,17 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StudentRepoRam implements StudentRepo {
+    private Long counter = 0L;
     private final List<Student> studentList;
     
     public StudentRepoRam() {
         studentList = new ArrayList<>();
-
-        studentList.add(new Student("Ivan",  "Ivanov"));
     }
     
     @Override
     public void add(String name, String lastname) {
-        studentList.add(new Student(name, lastname));
+        studentList.add(new Student(++counter, name, lastname));
     }
     
     @Override

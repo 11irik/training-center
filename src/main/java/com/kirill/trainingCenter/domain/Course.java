@@ -10,6 +10,12 @@ public class Course extends BaseEntity{
         this.duration = duration;
     }
 
+    public Course(Long id, String name, Integer duration) {
+        this.id = id;
+        this.name = name;
+        this.duration = duration;
+    }
+
     public String getName() {
         return name;
     }

@@ -10,7 +10,14 @@ public class Student extends BaseEntity {
     private Integer workingTimeTo;
 
     public Student(String name, String lastname) {
-        super();
+        this.name = name;
+        this.lastname = lastname;
+        this.workingTimeFrom = 10;
+        this.workingTimeTo = 18;
+    }
+
+    public Student(Long id, String name, String lastname) {
+        this.id = id;
         this.name = name;
         this.lastname = lastname;
         this.workingTimeFrom = 10;
