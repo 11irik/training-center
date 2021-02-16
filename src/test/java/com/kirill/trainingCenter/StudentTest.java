@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 import java.time.LocalDateTime;
 
 public class StudentTest {
-
+    
     @Test
     public void courseStartIsBeforeWorkingHours() {
         Course courseLessWorkingHours = new Course("Git", 4);
@@ -151,5 +151,19 @@ public class StudentTest {
         Assert.assertEquals(curriculumWeekend.getEndDate().getMonthValue(), 3);
         Assert.assertEquals(curriculumWeekend.getEndDate().getDayOfMonth(), 1);
         Assert.assertEquals(curriculumWeekend.getEndDate().getHour(), 17);
+    }
+
+    @Test
+    public void courseStartIsBetweenWorkingHoursEndsTheSameDaay() {
+        Course courseMoreWorkingHours = new Course("Spring", 3);
+        Curriculum curriculumWeekend = new Curriculum("C++");
+        Student student = new Student("Kirill", "Lukashin");
+
+        curriculumWeekend.addCourse(courseMoreWorkingHours);
+        student.setCurriculum(curriculumWeekend, LocalDateTime.of(2021, 2, 16, 12, 0));
+
+        Assert.assertEquals(curriculumWeekend.getEndDate().getMonthValue(), 2);
+        Assert.assertEquals(curriculumWeekend.getEndDate().getDayOfMonth(), 16);
+        Assert.assertEquals(curriculumWeekend.getEndDate().getHour(), 15);
     }
 }

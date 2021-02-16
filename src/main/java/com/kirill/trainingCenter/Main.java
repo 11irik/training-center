@@ -1,7 +1,7 @@
 package com.kirill.trainingCenter;
 
 
-import com.kirill.trainingCenter.cli.CommandLineInterface;
+import com.kirill.trainingCenter.userInterface.cli.CommandLineInterface;
 import com.kirill.trainingCenter.domain.Course;
 import com.kirill.trainingCenter.domain.Curriculum;
 import com.kirill.trainingCenter.domain.Student;

@@ -1,4 +1,4 @@
-package com.kirill.trainingCenter.cli;
+package com.kirill.trainingCenter.userInterface.cli;
 
 import com.kirill.trainingCenter.domain.Course;
 import com.kirill.trainingCenter.domain.Curriculum;
@@ -6,11 +6,10 @@ import com.kirill.trainingCenter.domain.Student;
 import com.kirill.trainingCenter.repo.CourseRepo;
 import com.kirill.trainingCenter.repo.CurriculumRepo;
 import com.kirill.trainingCenter.repo.StudentRepo;
+import com.kirill.trainingCenter.userInterface.cli.reporting.StudentReporterFull;
+import com.kirill.trainingCenter.userInterface.cli.reporting.StudentReporterShort;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -29,8 +28,8 @@ public class CommandLineInterface {
 
     private static final String ADD_STUDENT = "STUD";
     private static final String[] ADD_STUDENT_ARGS = {"NAME", "LASTNAME"};
-    private static final String GET_STUDENTS = "STUDENTS";
-    private static final String GET_STUDENT = "STUDENT";
+    private static final String GET_STUDENTS = "STUDENTSFULL";
+    private static final String GET_STUDENT = "STUDENTSSHORT";
     private static final String[] GET_STUDENT_ARGS = {"ID"};
 
     private static final String ADD_CURRICULUM = "CUR";
@@ -76,18 +75,13 @@ public class CommandLineInterface {
                         break;
                     case GET_STUDENTS:
                         LocalDateTime reportDate = LocalDateTime.now();
-                        System.out.println("Generating report date - " + formatDate(reportDate));
-                        for (Student student : studentRepo.get()) {
-                            System.out.println(getShortStudentInfo(student, reportDate));
-                        }
+                        StudentReporterShort studentReporterShort = new StudentReporterShort(reportDate);
+                        studentReporterShort.report(studentRepo.get());
                         break;
                     case GET_STUDENT:
-                        if (args.size() != GET_STUDENT_ARGS.length) {
-                            System.out.println(WRONG_ARGUMENT);
-                        } else {
-                            Student student = studentRepo.get(Long.parseLong(args.get(0)));
-                            System.out.println(getStudentInfo(student));
-                        }
+                        reportDate = LocalDateTime.now();
+                        StudentReporterFull studentReporterFull = new StudentReporterFull(reportDate);
+                        studentReporterFull.report(studentRepo.get());
                         break;
                     case ADD_CURRICULUM:
                         if (args.size() != ADD_CURRICULUM_ARGS.length - 1) { //FIXME
@@ -192,75 +186,5 @@ public class CommandLineInterface {
         sb.append(EXIT).append('\n');
 
         return sb.toString();
-    }
-    
-    private static String getStudentInfo(Student student) {
-        StringBuffer sb = new StringBuffer();
-        LocalDateTime reportDate = LocalDateTime.now();
-        Curriculum curriculum = student.getCurriculum();
-        
-        sb.append("STUDENT: ").append(student.getLastname()).append(" ").append(student.getName()).append(('\n'));
-        sb.append("WORKING TIME: FROM ").append(student.getWorkingTimeFrom()).append(" TO ").append(student.getWorkingTimeTo()).append(('\n'));
-
-        if (student.getCurriculum() != null) {
-            sb.append("CURRICULUM: ").append(student.getCurriculum().getName()).append('\n');
-            sb.append("START_DATE: ").append(formatDate(student.getCurriculum().getStartDate())).append('\n');
-            sb.append("END_DATE: ").append(formatDate(student.getCurriculum().getEndDate())).append('\n');
-            sb.append("PROGRAM DURATION: ").append(student.getCurriculum().getDuration()).append('\n');
-            Duration duration = Duration.between(reportDate, curriculum.getEndDate());
-            if (reportDate.compareTo(curriculum.getEndDate()) > 0) {
-                sb.append(durationToString(duration)).append(" have passed since the end.").append('\n');
-            } else {
-                sb.append(durationToString(duration)).append(" are left until the end.").append('\n');
-            }
-            sb.append("COURSE\t\t\tDURATION (hrs)").append('\n');
-            sb.append("--------------------------").append('\n');
-
-            int count = 0;
-            for (Course course : student.getCurriculum().getCourseList()) {
-                sb.append(++count).append(". ").append(course.getName()).append(".\t").append(course.getDuration()).append('\n');
-            }
-        } else {
-            sb.append("NO CURRICULUM").append('\n');
-        }
-        
-        return sb.toString();
-    }
-    
-    private static String getShortStudentInfo(Student student, LocalDateTime reportDate) {
-        StringBuffer sb = new StringBuffer();
-        Curriculum curriculum = student.getCurriculum();
-
-        sb.append(student.getId()).append(" ");
-        sb.append(student.getLastname()).append(" ").append(student.getName()).append(" ");
-        if (student.getCurriculum() != null) {
-            sb.append("(").append(student.getCurriculum().getName()).append(") - ");
-            Duration duration = Duration.between(reportDate, curriculum.getEndDate());
-            if (reportDate.compareTo(curriculum.getEndDate()) > 0) {
-                sb.append("Training completed. ")
-                        .append(durationToString(duration)).append(" have passed since the end.");
-            } else {
-                sb.append("Training is not finished. ")
-                        .append(durationToString(duration)).append(" are left until the end.");
-            }
-        } else {
-            sb.append("NO CURRICULUM");
-        }
-        
-        return sb.toString();
-    }
-    
-    private static String formatDate(LocalDateTime localDateTime) {
-        StringBuffer sb = new StringBuffer();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, E, HH:mm");
-        sb.append(localDateTime.format(formatter));
-        
-        return sb.toString();
-    }
-    
-    private static String durationToString(Duration duration) {
-        Long days = Math.abs(duration.toDays());
-        Long hours = Math.abs(duration.toHours()) - days * 24; //todo to const
-        return days + " d " + hours + " hours";
     }
 }
