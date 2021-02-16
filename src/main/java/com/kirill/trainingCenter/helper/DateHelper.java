@@ -35,6 +35,9 @@ public class DateHelper {
 
         if (hoursLeft <= 0) {
             hoursLeft = durationInHours;
+            if (courseStartHours < workingTimeTo && courseStartHours > workingTimeFrom) {
+                hoursLeft += courseStartHours - workingTimeFrom;
+            }
         } else {
             endDate = endDate.plusDays(1); //first day count
             int fullDays = hoursLeft / workingHours;
