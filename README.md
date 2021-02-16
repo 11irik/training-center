@@ -1,1 +1,1 @@
-# GridU Training Center 
+# Training Center 
